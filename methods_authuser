@@ -1,0 +1,4 @@
+GetSummary^^https://host/ui/v1/summary/totals^GET^Y
+CreateCustomer^{"Password": "Carrots", "ConfirmPassword": "Carrots", "CustomerID": 123}^https://host/ui/v1/customers^POST^Y
+UpdateCustomer^{"Password": "Carrots", "ConfirmPassword": "Carrots", "CustomerID": 123}^https://host/ui/v1/customers^PUT^Y
+DeleteCustomer^{"Password": "Carrots", "ConfirmPassword": "Carrots", "CustomerID": 123}^https://host/ui/v1/customers^DELETE^Y
