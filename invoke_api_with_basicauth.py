@@ -2,6 +2,10 @@
 This is a simple client to invoke any of the REST API methods which need BASIC authentication. Make sure you enter valid usernames and passwords in the creds hash on line 10 in this program before continuing :) 
 
 If you do not want to study traffic that is sent by the client, edit the code to communicate directly with the server by removing the "proxies" part from the invokeAPI method. If you DO pass traffic through Burp, ensure that you have the SUN JDK configured and not OpenJDK :)
+
+Here is how you invoke it:
+
+python invoke_api_with_basicauth.py
 '''
 
 import sys
@@ -14,21 +18,11 @@ creds = {'valid_user':'valid_password'}
 
 method_number_map = {}
 
-def main():
-  #Get all the APIs and the parameters that need to be sent with it
-  all_methods = getAPIData()
-
-  #Menu driven option which lets the user choose which API to invoke
-  method_number_to_invoke = chooseAPI(all_methods)
-
-  #Actually invoke the API
-  invokeAPI(all_methods, method_number_to_invoke)
-
-def printResponse(methodname,req):
+def print_response(methodname,req):
   print methodname
   print req.content
 
-def invokeAPI(all_methods, method_number_to_invoke):
+def invoke_api(all_methods, method_number_to_invoke):
   method_to_invoke = method_number_map[int(method_number_to_invoke,10)]
 
   for m1 in all_methods:
@@ -54,9 +48,9 @@ def invokeAPI(all_methods, method_number_to_invoke):
       req = requests.delete(url, headers=post_header, data=params, proxies={"https": "https://127.0.0.1:8080"}, verify=False)
 
     #Print the response to the method call. Let the user make a decision, don't put intelligence in.
-    printResponse(methodname,req)
+    print_response(methodname,req)
 
-def chooseAPI(all_methods):
+def choose_api(all_methods):
   print "\nEnter the API number that you would like to invoke\n"
   for i in range(0,len(all_methods)):
     t1 = all_methods[i].split('^')
@@ -69,20 +63,27 @@ def chooseAPI(all_methods):
 
   return method_number_to_invoke
 
-def getAPIData():
+def get_api_data():
   all_methods = []
-  apiDefsFile = 'methods_basic'
+  apidefsfile = 'methods_basic'
 
   try:
-    f=open(apiDefsFile,'rU')
-    t1 = f.read()
-    f.close()
+    with open(apidefsfile,'rU') as f:
+      t1 = f.read()
 
     all_methods = t1.split('\n')
     all_methods.pop()
   except:
-    print "Unexpected error:", sys.exc_info()[0]
+    sys.stderr.write("Unexpected error:", sys.exc_info()[0])
 
   return all_methods
 
-main()
+if __name__ == "__main__":
+  #Get all the APIs and the parameters that need to be sent with it
+  all_methods = get_api_data()
+
+  #Menu driven option which lets the user choose which API to invoke
+  method_number_to_invoke = choose_api(all_methods)
+
+  #Actually invoke the API
+  invoke_api(all_methods, method_number_to_invoke)
